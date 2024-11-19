@@ -74,11 +74,11 @@ export interface IProductBasket extends IProduct {
 	index: number;
 }
 
-export interface IStoreItemBasketActions {
+export interface ICatalogItemBasketActions {
 	onClick: (event: MouseEvent) => void;
 }
 
-export class StoreItemBasket extends Component<IProductBasket> {
+export class CatalogItemBasket extends Component<IProductBasket> {
 	protected _index: HTMLElement;
 	protected _title: HTMLElement;
 	protected _price: HTMLElement;
@@ -87,7 +87,7 @@ export class StoreItemBasket extends Component<IProductBasket> {
 	constructor(
 		protected blockName: string,
 		container: HTMLElement,
-		actions?: IStoreItemBasketActions
+		actions?: ICatalogItemBasketActions
 	) {
 		super(container);
 

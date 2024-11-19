@@ -10,18 +10,18 @@ interface ICardActions {
 
 export interface ICard {
 	id: string;
+  description: string;
+  image: string;
 	title: string;
 	category: string;
-	description: string;
-	image: string;
 	price: number | null;
 	selected: boolean;
 }
 
 export class Card extends Component<ICard> {
 	// Ссылки на внутренние элементы карточки
-	protected _title: HTMLElement;
 	protected _image: HTMLImageElement;
+  protected _title: HTMLElement;
 	protected _category: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLButtonElement;
@@ -34,16 +34,11 @@ export class Card extends Component<ICard> {
 		actions?: ICardActions
 	) {
 		super(container);
-
+    this._image = ensureElement<HTMLImageElement>(`.${blockName}__image`, container);
 		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-		this._image = ensureElement<HTMLImageElement>(
-			`.${blockName}__image`,
-			container
-		);
+    this._category = container.querySelector(`.${blockName}__category`);
 		this._button = container.querySelector(`.${blockName}__button`);
-		this._category = container.querySelector(`.${blockName}__category`);
 		this._price = container.querySelector(`.${blockName}__price`);
-
 		if (actions?.onClick) {
 			if (this._button) {
 				this._button.addEventListener('click', actions.onClick);
@@ -83,9 +78,7 @@ export class Card extends Component<ICard> {
 
 	// Сеттер для цены
 	set price(value: number | null) {
-		this._price.textContent = value
-			? handlePrice(value) + ' синапсов'
-			: 'Бесценно';
+		this._price.textContent = value? handlePrice(value) + ' синапсов': 'Бесценно';
 		if (this._button && !value) {
 			this._button.disabled = true;
 		}
@@ -98,13 +91,13 @@ export class Card extends Component<ICard> {
 	}
 }
 
-export class StoreItem extends Card {
+export class CatalogItem extends Card {
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super('card', container, actions);
 	}
 }
 
-export class StoreItemPreview extends Card {
+export class CatalogItemView extends Card {
 	protected _description: HTMLElement;
 
 	constructor(container: HTMLElement, actions?: ICardActions) {

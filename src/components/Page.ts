@@ -10,7 +10,7 @@ interface IPage {
 	counter: number;
 
 	// Массив карточек с товарами
-	store: HTMLElement[];
+	catalog: HTMLElement[];
 
 	// Переключатель для блокировки
 	// Отключает прокрутку страницы
@@ -23,7 +23,7 @@ interface IPage {
 export class Page extends Component<IPage> {
 	// Ссылки на внутренние элементы
 	protected _counter: HTMLElement;
-	protected _store: HTMLElement;
+	protected _catalog: HTMLElement;
 	protected _wrapper: HTMLElement;
 	protected _basket: HTMLElement;
 
@@ -32,7 +32,7 @@ export class Page extends Component<IPage> {
 		super(container);
 
 		this._counter = ensureElement<HTMLElement>('.header__basket-counter');
-		this._store = ensureElement<HTMLElement>('.gallery');
+		this._catalog = ensureElement<HTMLElement>('.gallery');
 		this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
 		this._basket = ensureElement<HTMLElement>('.header__basket');
 
@@ -47,8 +47,8 @@ export class Page extends Component<IPage> {
 	}
 
 	// Сеттер для карточек товаров на странице
-	set store(items: HTMLElement[]) {
-		this._store.replaceChildren(...items);
+	set catalog(items: HTMLElement[]) {
+		this._catalog.replaceChildren(...items);
 	}
 
 	// Сеттер для блока прокрутки

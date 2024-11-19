@@ -2,13 +2,13 @@ import { Page } from './components/Page';
 import { Api, ApiListResponse } from './components/base/api';
 import { EventEmitter } from './components/base/events';
 import { Modal } from './components/common/Modal';
-import { StoreItem, StoreItemPreview } from './components/Card';
+import { CatalogItem, CatalogItemView } from './components/Card';
 import { AppState, Product } from './components/AppData';
 import { ensureElement, cloneTemplate } from './utils/utils';
 import { ApiResponse, IOrderForm, IProduct } from './types';
 import { API_URL } from './utils/constants';
 import './scss/styles.scss';
-import { Basket, StoreItemBasket } from './components/Basket';
+import { Basket, CatalogItemBasket } from './components/Basket';
 import { Order } from './components/Order';
 import { Contacts } from './components/Contacts';
 import { Success } from './components/Success';
@@ -17,8 +17,7 @@ const api = new Api(API_URL);
 const events = new EventEmitter();
 
 // Все шаблоны
-const storeProductTemplate =
-	ensureElement<HTMLTemplateElement>('#card-catalog');
+const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
@@ -56,8 +55,8 @@ api
 
 // Изменение элементов каталога
 events.on('items:changed', () => {
-	page.store = appData.store.map((item) => {
-		const product = new StoreItem(cloneTemplate(storeProductTemplate), {
+	page.catalog = appData.catalog.map((item) => {
+		const product = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
 		});
 		return product.render({
@@ -73,7 +72,7 @@ events.on('items:changed', () => {
 // Открытие карточки с детальной информацией о товаре
 events.on('card:select', (item: Product) => {
 	page.locked = true;
-	const product = new StoreItemPreview(cloneTemplate(cardPreviewTemplate), {
+	const product = new CatalogItemView(cloneTemplate(cardPreviewTemplate), {
 		onClick: () => {
 			events.emit('card:toBasket', item);
 		},
@@ -103,14 +102,14 @@ events.on('card:toBasket', (item: Product) => {
 events.on('basket:open', () => {
 	page.locked = true;
 	const basketItems = appData.basket.map((item, index) => {
-		const storeItem = new StoreItemBasket(
+		const catalogItem = new CatalogItemBasket(
 			'card',
 			cloneTemplate(cardBasketTemplate),
 			{
 				onClick: () => events.emit('basket:delete', item),
 			}
 		);
-		return storeItem.render({
+		return catalogItem.render({
 			title: item.title,
 			price: item.price,
 			index: index + 1,

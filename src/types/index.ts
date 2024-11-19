@@ -59,7 +59,7 @@ export interface IAppState {
 	// Корзина с товарами
 	basket: Product[];
 	// Массив карточек товара
-	store: Product[];
+	catalog: Product[];
 	// Информация о заказе при покупке товара
 	order: IOrder;
 	// Ошибки при заполнении форм

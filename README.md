@@ -155,7 +155,7 @@ interface IAppState {
   basket: Product[];
 
   // Массив карточек товара
-  store: Product[];
+  catalog: Product[];
 
   // Информация о заказе
   order: IOrder;
@@ -244,7 +244,7 @@ interface IPage {
   counter: number;
 
   // Массив карточек с товарами
-  store: HTMLElement[];
+  catalog: HTMLElement[];
 
   // Переключатель для блокировки
   // Отключает прокрутку страницы
@@ -307,7 +307,7 @@ class AppState extends Model<IAppState> {
   basket: Product[] = [];
 
   // Массив со всеми товарами
-  store: Product[];
+  catalog: Product[];
 
   // Объект заказа клиента
   order: IOrder = {
@@ -398,7 +398,7 @@ abstract class Component<T> {
 class Page extends Component<IPage> {
   // Ссылки на внутренние элементы
   protected _counter: HTMLElement;
-  protected _store: HTMLElement;
+  protected _catalog: HTMLElement;
   protected _wrapper: HTMLElement;
   protected _basket: HTMLElement;
 
@@ -409,7 +409,7 @@ class Page extends Component<IPage> {
   set counter(value: number);
 
   // Сеттер для карточек товаров на странице
-  set store(items: HTMLElement[]);
+  set catalog(items: HTMLElement[]);
 
   // Сеттер для блока прокрутки
   set locked(value: boolean);
@@ -556,13 +556,13 @@ class EventEmitter implements IEvents {
 'items:changed'
 
 /*
-    Инициируется при клике на карточку товара в классе StoreItem и приводит
+    Инициируется при клике на карточку товара в классе CatalogItem и приводит
     к открытию модального окна с детальной информацией о товаре
 */
 'card:select'
 
 /*
-    Инициируется при клике на кнопку "В корзину" на карточке StoreItemPreview
+    Инициируется при клике на кнопку "В корзину" на карточке CatalogItemView
     В AppState добавляет товар в корзину, обновляет счётчик на корзине
     в классе Page
     Делает поле selected на товаре true для отключения кнопки, чтобы больше

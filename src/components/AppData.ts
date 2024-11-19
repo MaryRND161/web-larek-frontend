@@ -20,7 +20,7 @@ export class AppState extends Model<IAppState> {
 	basket: Product[] = [];
 
 	// Массив со всеми товарами
-	store: Product[];
+	catalog: Product[];
 
 	// Объект заказа
 	order: IOrder = {
@@ -108,13 +108,13 @@ export class AppState extends Model<IAppState> {
 	}
 
 	setStore(items: IProduct[]) {
-		this.store = items.map(
+		this.catalog = items.map(
 			(item) => new Product({ ...item, selected: false }, this.events)
 		);
-		this.emitChanges('items:changed', { store: this.store });
+		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
 
 	resetSelected() {
-		this.store.forEach((item) => (item.selected = false));
+		this.catalog.forEach((item) => (item.selected = false));
 	}
 }
