@@ -1,5 +1,5 @@
-import { IEvents } from './base/events';
-import { Form } from './common/Form';
+import { IEvents } from '../base/events';
+import { Form } from './Form';
 
 /*
  * Интерфейс, описывающий 1-й шаг оформления товара: выбор способа оплаты и ввод адреса доставки

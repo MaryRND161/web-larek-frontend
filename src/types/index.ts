@@ -30,20 +30,20 @@ export interface IProduct {
 	// уникальный ID
 	id: string;
 
-	// описание товара
-	description: string;
-
-	// ссылка на изображение
-	image: string;
-
-	// название
+  	// название
 	title: string;
 
 	// категория товара
 	category: CategoryType;
 
 	// ссылка на изображение
+	image: string;
+
+	// цена твара
 	price: number | null;
+
+	// описание товара
+	description: string;
 
 	// флаг - был данный товар добавлен в корзину или нет
 	selected: boolean;

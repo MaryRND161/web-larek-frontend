@@ -8,22 +8,24 @@ import { ensureElement, cloneTemplate } from './utils/utils';
 import { ApiResponse, IOrderForm, IProduct } from './types';
 import { API_URL } from './utils/constants';
 import './scss/styles.scss';
-import { Basket, CatalogItemBasket } from './components/Basket';
-import { Order } from './components/Order';
-import { Contacts } from './components/Contacts';
-import { Success } from './components/Success';
+import { Basket} from './components/common/Basket';
+import { CatalogItemBasket } from './components/common/BasketItem';
+import { Order } from './components/common/Order';
+import { Contacts } from './components/common/Contacts';
+import { Success } from './components/common/Success';
 
 const api = new Api(API_URL);
 const events = new EventEmitter();
 
 // Все шаблоны
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
-const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
-const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+
 
 // Модель данных приложения
 const appData = new AppState({}, events);
@@ -33,10 +35,10 @@ const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 // Переиспользуемые компоненты
-const basket = new Basket('basket', cloneTemplate(basketTemplate), events);
+const basket = new Basket(cloneTemplate(basketTemplate), events);
 const order = new Order('order', cloneTemplate(orderTemplate), events);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
-const success = new Success('order-success', cloneTemplate(successTemplate), {
+const success = new Success(cloneTemplate(successTemplate), {
 	onClick: () => {
 		events.emit('modal:close');
 		modal.close();
@@ -103,7 +105,7 @@ events.on('basket:open', () => {
 	page.locked = true;
 	const basketItems = appData.basket.map((item, index) => {
 		const catalogItem = new CatalogItemBasket(
-			'card',
+
 			cloneTemplate(cardBasketTemplate),
 			{
 				onClick: () => events.emit('basket:delete', item),
@@ -131,7 +133,7 @@ events.on('basket:delete', (item: Product) => {
 	page.counter = appData.getBasketAmount();
 	basket.refreshIndices();
 	if (!appData.basket.length) {
-		basket.disableButton();
+		basket.setDisabled;
 	}
 });
 
