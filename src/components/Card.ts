@@ -1,112 +1,95 @@
-import { Component } from './base/Component';
-import { CategoryType } from '../types';
-import { ensureElement, handlePrice } from '../utils/utils';
-import { CDN_URL } from '../utils/constants';
-import { categoryMapping } from '../utils/constants';
+import { IProductItem, ICardActions } from '../types';
+import { ensureElement, formatPrice } from '../utils/utils';
+import { Component } from './base/component';
+import { ICardCategory } from './../types';
+import { CATEGORY_CARD } from './../utils/constants';
 
-interface ICardActions {
-	onClick: (event: MouseEvent) => void;
-}
+export class Card extends Component<IProductItem> {
+	protected cardImage: HTMLImageElement;
+	protected cardCategory: HTMLElement;
+	protected cardTitle: HTMLElement;
+	protected cardText?: HTMLElement;
+	protected cardPrice: HTMLElement;
+	protected cardButton: HTMLButtonElement;
+	protected cardId: string;
 
-export interface ICard {
-	id: string;
-  description: string;
-  image: string;
-	title: string;
-	category: string;
-	price: number | null;
-	selected: boolean;
-}
-
-export class Card extends Component<ICard> {
-	// Ссылки на внутренние элементы карточки
-	protected _image: HTMLImageElement;
-  protected _title: HTMLElement;
-	protected _category: HTMLElement;
-	protected _price: HTMLElement;
-	protected _button: HTMLButtonElement;
-
-	// Конструктор принимает имя блока, родительский контейнер
-	// и объект с колбэк функциями
-	constructor(
-		protected blockName: string,
-		container: HTMLElement,
-		actions?: ICardActions
-	) {
+	constructor(container: HTMLElement, actions?: ICardActions) {
 		super(container);
-    this._image = ensureElement<HTMLImageElement>(`.${blockName}__image`, container);
-		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-    this._category = container.querySelector(`.${blockName}__category`);
-		this._button = container.querySelector(`.${blockName}__button`);
-		this._price = container.querySelector(`.${blockName}__price`);
+		this.cardImage = ensureElement(
+			'.card__image',
+			this.container
+		) as HTMLImageElement;
+		this.cardCategory = ensureElement('.card__category', this.container);
+		this.cardTitle = ensureElement('.card__title', this.container);
+		this.cardText = this.container.querySelector('.card__text');
+		this.cardPrice = ensureElement('.card__price', this.container);
+		this.cardButton = this.container.querySelector('.card__button');
+
 		if (actions?.onClick) {
-			if (this._button) {
-				this._button.addEventListener('click', actions.onClick);
+			if (this.cardButton) {
+				this.cardButton.addEventListener('click', actions.onClick);
 			} else {
 				container.addEventListener('click', actions.onClick);
 			}
 		}
 	}
 
-	// Сеттер и геттер для уникального ID
+	// Изображение товара
+	set image(value: string) {
+		this.setImage(this.cardImage, value, this.title);
+	}
+
+	// Категория товара
+	set category(value: ICardCategory) {
+		this.setText(this.cardCategory, value);
+		this.cardCategory.className = '';
+		const specifiedClass = 'card__category';
+		const optionallyClass = CATEGORY_CARD[value];
+		this.cardCategory.classList.add(
+			specifiedClass,
+			`${specifiedClass}_${optionallyClass}`
+		);
+	}
+
+	// Название товара
+	set title(value: string) {
+		this.setText(this.cardTitle, value);
+	}
+
+	// Описание товара
+	set text(value: string) {
+		this.setText(this.cardText, value);
+	}
+
+	// Цена товара
+	set price(value: number | null) {
+		this.setText(this.cardPrice, value ? formatPrice(value) : 'Бесценно');
+	}
+
+	// ID товара
 	set id(value: string) {
 		this.container.dataset.id = value;
 	}
+
 	get id(): string {
 		return this.container.dataset.id || '';
 	}
 
-	// Сеттер и гетер для названия
-	set title(value: string) {
-		this._title.textContent = value;
-	}
 	get title(): string {
-		return this._title.textContent || '';
+		return this.cardTitle.textContent || '';
 	}
 
-	// Сеттер для изображения
-	set image(value: string) {
-		this._image.src = CDN_URL + value;
+	render(data: Partial<IProductItem>): HTMLElement {
+		Object.assign(this as object, data);
+		return this.container;
 	}
 
-	// Сеттер для флага - выбран товар или нет
+	set active(value: boolean) {
+		this.toggleClass(this.container, 'modal_active', value);
+	}
+
+	// Сеттер для флага - уже выбирали товар или нет (выбранный товар нельзя добавить в корзину повторно)
 	set selected(value: boolean) {
-		if (!this._button.disabled) {
-			this._button.disabled = value;
-		}
-	}
-
-	// Сеттер для цены
-	set price(value: number | null) {
-		this._price.textContent = value? handlePrice(value) + ' синапсов': 'Бесценно';
-		if (this._button && !value) {
-			this._button.disabled = true;
-		}
-	}
-
-	// Сеттер для категории
-	set category(value: CategoryType) {
-		this._category.textContent = value;
-		this._category.classList.add(categoryMapping[value]);
-	}
-}
-
-export class CatalogItem extends Card {
-	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('card', container, actions);
-	}
-}
-
-export class CatalogItemView extends Card {
-	protected _description: HTMLElement;
-
-	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('card', container, actions);
-
-		this._description = container.querySelector(`.${this.blockName}__text`);
-	}
-
-	set description(value: string) {
-		this._description.textContent = value;
+		this.setDisabled(this.cardButton, value ? true : false);
 	}
 }

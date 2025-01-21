@@ -1,14 +1,20 @@
-import { CategoryMapping } from '../types';
-
+import { ICardCategory, ISettings } from '../types';
 export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
-export const settings = {};
+export const SETTINGS: ISettings = {
+	modalTemplate: '#modal',
+	modalSettings: {
+		close: '.modal__close',
+		content: '.modal__content',
+		activeClass: '.modal_active',
+	},
+};
 
-export const categoryMapping: CategoryMapping = {
-	другое: 'card__category_other',
-	'софт-скил': 'card__category_soft',
-	дополнительное: 'card__category_additional',
-	кнопка: 'card__category_button',
-	'хард-скил': 'card__category_hard',
+export const CATEGORY_CARD: Record<ICardCategory, string> = {
+	'софт-скил': 'soft',
+	другое: 'other',
+	дополнительное: 'additional',
+	кнопка: 'button',
+	'хард-скил': 'hard',
 };

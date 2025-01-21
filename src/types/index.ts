@@ -1,121 +1,126 @@
-import { Product } from '../components/AppData';
-
-/*
-    Тип описывающий все возможные категории товара
-*/
-export type CategoryType =
-	| 'другое'
+// Доступные категории карточек
+export type ICardCategory =
 	| 'софт-скил'
+	| 'другое'
 	| 'дополнительное'
 	| 'кнопка'
 	| 'хард-скил';
 
-export type CategoryMapping = {
-	[Key in CategoryType]: string;
-};
-
-/*
-    Тип, описывающий ошибки валидации форм
-*/
-export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
-
-export interface ApiResponse {
-	items: IProduct[];
+// Типизация настроек, чтобы не забыть,
+// какие настройки есть и какие значения они могут принимать.
+export interface ISettings {
+	modalTemplate: string;
+	modalSettings: {
+		close: string;
+		content: string;
+		activeClass: string;
+	};
 }
 
-/*
- * Интерфейс, описывающий карточку товара
- * */
-export interface IProduct {
-	// уникальный ID
+// Какие изменения состояния приложения могут происходить
+export enum AppStateChanges {
+	items = 'items:changed',
+	modal = 'modal:changed',
+	selectedCard = 'card:selected',
+	basketAdd = 'card:addToBasket',
+	basketDel = 'card:deleteFromBasket',
+	basketView = 'basket:open',
+	orderPyament = 'order:paymentMethod',
+	orderMaking = 'order:making',
+	formInput = 'input:changed',
+	formErrors = 'formErrors:change',
+	orderReady = 'order:submit',
+	contactsReady = 'contacts:submit',
+	order = 'change:order',
+}
+
+// Настройки модели данных
+export interface AppStateSettings {
+	formatCurrency: (value: number) => string;
+	storageKey: string;
+	// функция, которая будет вызываться при изменении состояния
+	onChange: (changed: AppStateChanges) => void;
+}
+
+// Модель данных приложения
+// Интерфейс, описывающий товар (загружаемые с сервера данные)
+export interface IProductItem {
+	// уникальный индекс
 	id: string;
-
-  	// название
-	title: string;
-
-	// категория товара
-	category: CategoryType;
-
+	// описание
+	description?: string;
 	// ссылка на изображение
 	image: string;
-
-	// цена твара
+	// название товара
+	title: string;
+	// категория товара
+	category: ICardCategory;
+	// цена товара
 	price: number | null;
-
-	// описание товара
-	description: string;
-
-	// флаг - был данный товар добавлен в корзину или нет
+	// признак того, что товар был добавлен в корзину
 	selected: boolean;
 }
 
-/*
-  * Интерфейс, описывающий внутренне состояние приложении:
-    -  используется для хранения карточек, корзины, заказа пользователя, ошибок
-       при валидации форм;
-    - имеет методы для работы с карточками и корзиной
-  * */
-export interface IAppState {
-	// Корзина с товарами
-	basket: Product[];
-	// Массив карточек товара
-	catalog: Product[];
-	// Информация о заказе при покупке товара
-	order: IOrder;
-	// Ошибки при заполнении форм
-	formErrors: FormErrors;
-	// Метод для добавления товара в корзину
-	addToBasket(value: Product): void;
-	// Метод для удаления товара из корзины
-	deleteFromBasket(id: string): void;
-	// Метод для полной очистки корзины
-	clearBasket(): void;
-	// Метод для получения количества товаров в корзине
-	getBasketAmount(): number;
-	// Метод для получения общей стоимости товаров в корзине
-	getTotalBasketPrice(): number;
-	// Метод для добавления ID товаров в корзине в поле items для order
-	setItems(): void;
-	// Метод для заполнения полей email, phone, address, payment в order
-	setOrderField(field: keyof IOrderForm, value: string): void;
-	// Валидация формы заказа (1-й шаг оформления товара: выбор способа оплаты и ввод адреса доставки)
-	validateOrder(): boolean;
-	// Валидация формы заказа (2-й шаг оформления товара: ввод почты и телефона покупателя)
-	validateContacts(): boolean;
-	// Очистить order после покупки товаров
-	refreshOrder(): boolean;
-	// Метод для преобразования данных, полученых с сервера, к формату, в котором они будут отображаться
-	setStore(items: IProduct[]): void;
-	// Метод для обновления поля selected во всех товарах после совершения покупки
-	resetSelected(): void;
+// Состояние интерфейса
+export interface ICardActions {
+	onClick: (event: MouseEvent) => void;
 }
 
-/*
- * Интерфейс, описывающий поля заказа товара
- * */
-export interface IOrder {
-	// Массив ID купленных товаров
-	items: string[];
-
-	// Способ оплаты
-	payment: string;
-
-	// Сумма заказа
-	total: number;
-
-	// Адрес доставки
-	address: string;
-
-	// Электронная почта покупателя
-	email: string;
-
-	// Телефон покупателя
-	phone: string;
+// Интерфейс, описывающий главную страницу
+export interface IPage {
+	cardContainer: HTMLElement[];
+	basketTotal: number;
+	locked: boolean;
 }
 
+// Интерфейс, описывающий элемент корзины
+export type IBasketItem = Pick<
+	IProductItem,
+	'id' | 'title' | 'price' | 'selected'
+>;
+
+// Интерфейс, описывающий корзину
+export interface IBasket extends IBasketItem {
+	// общая стоимость товаров в корзине
+	totalBasketPrice: number | null;
+	// список элементов корзины
+	listBasket: HTMLElement[];
+	// порядковый номер элемента корзины
+	indexBasket: number | null;
+}
+
+// Интерфейс, описывающий поля формы заказа
 export interface IOrderForm {
+	// способ оплаты (онлайн / при получении)
 	payment: string;
+	// адрес доставки
 	address: string;
+	// электронная почта покупателя
 	email: string;
+	// телефон покупателя
 	phone: string;
 }
+
+// Интерфейс, описывающий заказ
+export interface IOrder extends IOrderForm {
+	// массив индексов купленных товаров
+	items: string[];
+	//сумма заказа
+	total: number;
+}
+
+export interface IOrderResult {
+	id: string;
+	total: number;
+}
+
+export interface ISuccess {
+	description: number;
+}
+
+export interface ISuccessActions {
+	onClick: () => void;
+}
+
+// Тип, описывающий ошибки валидации форм
+export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
