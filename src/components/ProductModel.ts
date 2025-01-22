@@ -26,15 +26,10 @@ export class ProductModel extends Model<IProductItem> {
 	};
 	formErrors: FormErrors = {};
 	preview: string | null;
-	idCounter: number;
 	isError = false;
 
 	protected settings: AppStateSettings;
 
-	// возвращает число - порядковый номер товара в корзине
-	makeId() {
-		return this.idCounter++;
-	}
 	// помещает товары в каталог
 	setItems(items: IProductItem[]) {
 		this.items = items;
@@ -62,8 +57,6 @@ export class ProductModel extends Model<IProductItem> {
 	addItemToCart(item: IProductItem) {
 		this.basket.push(item);
 		this.selectedItem(item.id);
-		this.idCounter = this.makeId();
-		this.events.emit(AppStateChanges.items);
 	}
 
 	// удаляет выбранный товар из корзины по индексу

@@ -168,13 +168,9 @@ class ProductModel extends Model<IProductItem> {
  };
  formErrors: FormErrors = {};
  preview: string | null;
- idCounter: number;
  isError = false;
 
  protected settings: AppStateSettings;
-
- // возвращает число - порядковый номер товара в корзине
- makeId() {}
 
  // получает массив всех товаров
  getItems(): IProductItem[] {}

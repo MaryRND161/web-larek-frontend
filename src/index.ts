@@ -61,6 +61,11 @@ const basket = new Basket(cloneTemplate(basketTemplate), {
 });
 const order = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Order(cloneTemplate(contactsTemplate), events);
+const success = new Success(cloneTemplate(successTemplate), {
+	onClick: () => {
+		modal.close();
+	},
+});
 
 // Дальше идет бизнес-логика
 // Поймали событие, сделали что нужно
@@ -213,15 +218,9 @@ events.on(AppStateChanges.contactsReady, () => {
 	api
 		.postProductOrder(productModel.order)
 		.then((result) => {
-			const success = new Success(cloneTemplate(successTemplate), {
-				onClick: () => {
-					modal.close();
-					productModel.clearOrder();
-					productModel.clearCart();
-					order.clearPayment();
-				},
-			});
-
+			productModel.clearOrder();
+			productModel.clearCart();
+			order.clearPayment();
 			modal.render({
 				content: success.render({
 					description: result.total,
